@@ -16,7 +16,7 @@ export default () => {
           } else if (route.name === "parcheggio") {
             iconName = "local-parking";
           } else if (route.name === "attivita") {
-            iconName = "menu";
+            iconName = "apps";
           }
 
           // Restituisce l'icona MaterialIcons con il nome corretto e colore specificato
