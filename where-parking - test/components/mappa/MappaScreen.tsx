@@ -21,7 +21,7 @@ const MappaScreen = () => {
       if (errorMsg) {
         setGpsActivated(false);
         alert(
-          "GPS è disattivato. \n Insrire manualemnte la via in cui ti trovi"
+          "Attenzione: GPS è disattivato. \n - Inserire manualmente l'indrizzo in cui ti trovi"
         );
         return;
       }
