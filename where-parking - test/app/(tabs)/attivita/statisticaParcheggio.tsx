@@ -38,7 +38,7 @@ const StatisticsScreen = () => {
   return (
     <ScrollView style={styles.container}>
     <View style={styles.titolo}>
-      <Text style={styles.title}>Le tue statistiche della città x</Text>
+      <Text style={styles.title}>Le tue statistiche della città</Text>
       </View>
       <View style={styles.searchContainer}>
         <TextInput style={styles.input} placeholder="Inserisci la città..." />

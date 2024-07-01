@@ -9,3 +9,14 @@ export async function getComuni() {
   if (error) console.error("Error", error ?? "Non ci sono errori");
   // console.log("TCL: getCountries -> ", comune);
 }
+
+export const getUtente = async (setUser) => {
+  let { data: utente, error } = await supabase
+    .from("utente")
+    .select("*")
+    .limit(1);
+  if (utente) {
+    console.log(utente[0]);
+    setUser((u) => utente[0]);
+  }
+};

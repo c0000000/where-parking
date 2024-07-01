@@ -21,9 +21,10 @@ export type MarkerData = {
 export type MappaParkProps = {
   coordinate?: Coordinate;
   markers?: MarkerData[];
+  onPercorso?: false;
 };
 
-const MappaPark = ({ coordinate, markers }: MappaParkProps) => {
+const MappaPark = ({ coordinate, markers, onPercorso }: MappaParkProps) => {
   const userLocation = markers.filter((m) => m.id == "user")[0];
   const carLocation = markers.filter((m) => m.id == "car")[0];
 
@@ -43,6 +44,10 @@ const MappaPark = ({ coordinate, markers }: MappaParkProps) => {
       }}
       zoomControlEnabled={false}
       region={coordinate}
+      showsCompass={true}
+      showsUserLocation={markers.find((m) => m.id === "user") ? true : false}
+      showsMyLocationButton={true}
+      compassOffset={{ x: 20, y: 100 }}
     >
       {markers &&
         markers.map((marker) => (
@@ -54,7 +59,7 @@ const MappaPark = ({ coordinate, markers }: MappaParkProps) => {
             pinColor={marker.color || ""}
           />
         ))}
-      {origin && destination && (
+      {origin && destination && onPercorso && (
         <MapViewDirections
           origin={origin}
           destination={destination}

@@ -1,28 +1,56 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, FlatList } from 'react-native';
+import { getUtente } from "@/components/useBase";
+import { User } from "@supabase/supabase-js";
+import React, { useEffect, useState } from "react";
+import {
+  View,
+  Text,
+  StyleSheet,
+  TextInput,
+  TouchableOpacity,
+  FlatList,
+} from "react-native";
+
+interface UserData {
+  id: number;
+  nome: string;
+  cognome: string;
+  email: string;
+  password: string;
+  indirizzo: string;
+  cap: string;
+  localita: string;
+}
 
 export default function ProfileScreen() {
-  const [email, setEmail] = useState('ciao.sonoio@gmail.com');
-  const [phone, setPhone] = useState('+039 9999999999');
+  const [userData, setUser] = useState<UserData>(null);
   const [plates, setPlates] = useState([
-    { id: '1', plate: 'AA 000 AA' },
-    { id: '2', plate: 'AA 000 AB' },
+    { id: "1", plate: "AA 000 AA" },
+    { id: "2", plate: "AA 000 AB" },
   ]);
-  const [newPlate, setNewPlate] = useState('');
+  const [newPlate, setNewPlate] = useState("");
 
+  const setProfilo = { setUser };
+  useEffect(() => {
+    (async () => {
+      await getUtente(setUser);
+    })();
+  },[]);
   const addPlate = () => {
     if (newPlate.trim()) {
-      setPlates([...plates, { id: (plates.length + 1).toString(), plate: newPlate }]);
-      setNewPlate('');
+      setPlates([
+        ...plates,
+        { id: (plates.length + 1).toString(), plate: newPlate },
+      ]);
+      setNewPlate("");
     }
   };
 
   const removePlate = (id) => {
-    setPlates(plates.filter(plate => plate.id !== id));
+    setPlates(plates.filter((plate) => plate.id !== id));
   };
 
   const updatePlate = (id, newPlateValue) => {
-    const updatedPlates = plates.map(plate => {
+    const updatedPlates = plates.map((plate) => {
       if (plate.id === id) {
         return { ...plate, plate: newPlateValue };
       }
@@ -38,23 +66,21 @@ export default function ProfileScreen() {
         {/* Add profile icon here if you have one */}
       </View>
       <View style={styles.infoContainer}>
+        <Text style={styles.label}>Nome</Text>
+        <Text style={styles.text}>{userData?.nome}</Text>
+
+        <Text style={styles.label}>Cognome</Text>
+        <Text style={styles.text}>{userData?.cognome}</Text>
+
         <Text style={styles.label}>Email</Text>
-        <TextInput
-          style={styles.input}
-          value={email}
-          onChangeText={setEmail}
-        />
-        <Text style={styles.label}>Numero Tele.</Text>
-        <TextInput
-          style={styles.input}
-          value={phone}
-          onChangeText={setPhone}
-        />
+        <Text style={styles.text}>{userData?.email}</Text>
+        <Text style={styles.label}>Password</Text>
+        <Text style={styles.text}>*********</Text>
       </View>
       <Text style={styles.sectionTitle}>Elenco targhe registrate</Text>
       <FlatList
         data={plates}
-        keyExtractor={item => item.id}
+        keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
           <View style={styles.plateContainer}>
             <TextInput
@@ -62,7 +88,10 @@ export default function ProfileScreen() {
               value={item.plate}
               onChangeText={(text) => updatePlate(item.id, text)}
             />
-            <TouchableOpacity style={styles.removeButton} onPress={() => removePlate(item.id)}>
+            <TouchableOpacity
+              style={styles.removeButton}
+              onPress={() => removePlate(item.id)}
+            >
               <Text style={styles.removeButtonText}>X</Text>
             </TouchableOpacity>
           </View>
@@ -89,17 +118,17 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-    backgroundColor: '#fff',
-    margin: 10
+    backgroundColor: "#fff",
+    margin: 10,
   },
   name: {
     fontSize: 24,
-    fontWeight: 'bold',
-    textAlign: 'center',
+    fontWeight: "bold",
+    textAlign: "center",
     marginVertical: 10,
   },
   profileIcon: {
-    alignSelf: 'center',
+    alignSelf: "center",
     marginVertical: 10,
     // Add styling for profile icon if necessary
   },
@@ -109,51 +138,55 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 16,
     marginVertical: 5,
+    fontWeight: "800",
   },
   input: {
-    backgroundColor: '#e0e0e0',
+    backgroundColor: "#e0e0e0",
     padding: 10,
     borderRadius: 5,
     marginBottom: 15,
     borderBottomWidth: 1,
-    borderBottomColor: 'white',
+    borderBottomColor: "white",
   },
   sectionTitle: {
     fontSize: 20,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginVertical: 10,
   },
   plateContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    backgroundColor: '#e0e0e0',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    backgroundColor: "#e0e0e0",
     padding: 10,
     borderRadius: 5,
     marginBottom: 10,
   },
   plateInput: {
     flex: 1,
-    backgroundColor: '#e0e0e0',
+    backgroundColor: "#e0e0e0",
     padding: 10,
-
   },
   removeButton: {
-    backgroundColor: 'black',
+    backgroundColor: "black",
     padding: 5,
     borderRadius: 5,
     marginLeft: 10,
   },
   removeButtonText: {
-    color: '#fff',
-    fontWeight: 'bold',
+    color: "#fff",
+    fontWeight: "bold",
   },
   addButton: {
-    alignItems: 'center',
+    alignItems: "center",
     padding: 10,
   },
   addButtonText: {
     fontSize: 24,
-    color: '#000',
+    color: "#000",
+  },
+  text: {
+    fontSize: 16,
+    marginBottom: 10,
   },
 });

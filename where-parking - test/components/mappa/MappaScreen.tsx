@@ -6,6 +6,7 @@ import { MaterialIcons } from "@expo/vector-icons";
 import { useLocatioUser } from "@/hooks/useUserLocatio";
 import { getComuni } from "../useBase";
 import { Region } from "react-native-maps";
+import ParcheggioButtons from "./parcheggioButton";
 
 const MappaScreen = () => {
   const [locationData, errorMsg, loading, requestLocation] = useLocatioUser();
@@ -13,7 +14,9 @@ const MappaScreen = () => {
   const [markers, setMarkers] = useState<MarkerData[]>([]);
   const [userMarker, setUserMarker] = useState<MarkerData | null>(null);
   const [focusCoordinate, setCoordinate] = useState<Coordinate>(null);
+  const [onPercorso, setOnPercorso] = useState<boolean>(false);
   const trovaAuto = async () => {
+    setOnPercorso((v) => !v);
     if (!gpsActivated) {
       if (errorMsg) {
         setGpsActivated(false);
@@ -27,7 +30,7 @@ const MappaScreen = () => {
     console.log({ markerCar });
     if (markerCar) {
       if (gpsActivated) {
-        alert("Ricerca percorso migliore");
+        alert(!onPercorso?"Ricerca percorso migliore":"Percorso rimosso");
         const { coordinate } = markerCar;
         changeRegion(coordinate.latitude, coordinate.longitude);
       } else {
@@ -50,9 +53,6 @@ const MappaScreen = () => {
 
   const createMarkerCar = async () => {
     // await getComuni();
-    if (markers.find((m) => m.id === "car")) {
-      alert("Hai gia parcheggiato");
-    }
     const carMarker: MarkerData = {
       id: "car",
       coordinate: {
@@ -62,7 +62,8 @@ const MappaScreen = () => {
       title: "Car Location",
       color: "red",
     };
-
+    const { coordinate } = carMarker;
+    changeRegion(coordinate.latitude, coordinate.longitude);
     setMarkers((prevMarkers) => {
       const filteredMarkers = prevMarkers.filter(
         (marker) => marker.id !== "car"
@@ -92,7 +93,7 @@ const MappaScreen = () => {
       setGpsActivated(true);
       setUserMarker(newUserMarker);
       setMarkers((prevMarkers) => [newUserMarker, ...prevMarkers]);
-      console.log("GPS Markers", markers);
+      console.log("GPS Markers --", markers);
       setGpsActivated(true);
       const { coordinate } = newUserMarker;
       changeRegion(coordinate.latitude, coordinate.longitude);
@@ -105,7 +106,11 @@ const MappaScreen = () => {
   return (
     <View style={{ width: "100%", height: "100%" }}>
       <View style={styles.mapContainer}>
-        <MappaPark coordinate={focusCoordinate} markers={markers} />
+        <MappaPark
+          onPercorso={onPercorso}
+          coordinate={focusCoordinate}
+          markers={markers}
+        />
         <View style={styles.search}>
           <SearchComponent />
         </View>
@@ -132,26 +137,18 @@ const MappaScreen = () => {
           color={gpsActivated ? "blue" : "black"}
         />
       </TouchableOpacity>
-
-      <View style={styles.container}>
-        <View style={styles.buttonContainer}>
-          <TouchableOpacity
-            style={styles.buttonParcheggio}
-            onPress={createMarkerCar}
-          >
-            <Text style={styles.buttonTextParcheggio}>PARCHEGGIA</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.buttonParcheggio} onPress={trovaAuto}>
-            <Text style={styles.buttonTextParcheggio}>TROVA AUTO</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
+      <ParcheggioButtons
+        createMarkerCar={createMarkerCar}
+        trovaAuto={trovaAuto}
+        onMarkerCar={markers.find((m) => m.id === "car") ? true : false}
+      />
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   mapContainer: {
+    paddingTop: 20,
     position: "relative",
     height: "90%",
   },
@@ -159,7 +156,7 @@ const styles = StyleSheet.create({
   search: {
     position: "absolute",
     top: 20,
-    left: 20,
+    left: 30,
     right: 20,
     zIndex: 1,
   },
@@ -178,34 +175,6 @@ const styles = StyleSheet.create({
   buttonText: {
     color: "white",
     fontSize: 16,
-  },
-  container: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    bottom: 0,
-    width: "100%",
-    backgroundColor: "white",
-    borderColor: "black",
-    borderTopWidth: 1,
-  },
-  buttonContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    width: "80%",
-  },
-  buttonParcheggio: {
-    flex: 1,
-    backgroundColor: "blue",
-    padding: 15,
-    margin: 10,
-    alignItems: "center",
-    borderRadius: 5,
-  },
-  buttonTextParcheggio: {
-    color: "white",
-    fontSize: 13,
-    textAlign: "center",
   },
 });
 
