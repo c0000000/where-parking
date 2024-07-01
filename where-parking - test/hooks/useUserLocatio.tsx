@@ -6,8 +6,10 @@ import * as Location from "expo-location";
 export const useLocatioUser = () => {
   const [location, setLocation] = useState(null);
   const [errorMsg, setErrorMsg] = useState(null);
+  const [loading, setLoading] = useState(false);
 
-  const requestLocation = async () => {
+  const requestLocation = async (callback) => {
+    setLoading(true);
     try {
       if (Platform.OS === "android" && !Device.isDevice) {
         throw new Error(
@@ -17,7 +19,9 @@ export const useLocatioUser = () => {
 
       let { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== "granted") {
-        throw new Error("Permission to access location was denied");
+        throw new Error(
+          "Permessi GPS sono stati negati,\n Attivarli dalle impostazioni"
+        );
       }
 
       let location = await Location.getCurrentPositionAsync({});
@@ -25,11 +29,18 @@ export const useLocatioUser = () => {
     } catch (error) {
       setErrorMsg(error.message);
     }
+    setLoading(false);
+
+    callback();
+
+    // console.info("fine useUserLocation\n");
+    // console.log("TCL: requestLocation -> location", location);
+    // console.log("TCL: requestLocation -> error", errorMsg);
   };
 
   // useEffect(() => {
   //   requestLocation();
-  // }, []); 
+  // }, []);
 
   let text = "Waiting..";
   if (errorMsg) {
@@ -38,5 +49,5 @@ export const useLocatioUser = () => {
     text = JSON.stringify(location);
   }
 
-  return [location, errorMsg, requestLocation];
+  return [location, errorMsg, loading, requestLocation];
 };
