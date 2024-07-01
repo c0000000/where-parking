@@ -36,14 +36,9 @@ const MappaPark = ({ coordinate: initCoordinate, markers }: MappaParkProps) => {
   const userLocation = markers.filter((m) => m.id == "user")[0];
   const carLocation = markers.filter((m) => m.id == "car")[0];
 
-  const origin = userLocation?.coordinate ?? {
-    latitude: 37.771707,
-    longitude: -122.4053769,
-  };
-  const destination = carLocation?.coordinate ?? {
-    latitude: 37.771707,
-    longitude: -122.4053769,
-  };
+  const origin = userLocation?.coordinate;
+  const destination = carLocation?.coordinate;
+
   const GOOGLE_MAPS_APIKEY = "AIzaSyC0FC6-sXJ7ApEO_si6bg3c7DN5dyAFzBo";
 
   return (
@@ -63,6 +58,7 @@ const MappaPark = ({ coordinate: initCoordinate, markers }: MappaParkProps) => {
           origin={origin}
           destination={destination}
           apikey={GOOGLE_MAPS_APIKEY}
+          onError={(e) => console.log("errorMapDirection:", e)}
         />
       )}
     </MapView>
