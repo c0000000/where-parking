@@ -1,4 +1,5 @@
 import { getUtente } from "@/components/useBase";
+import { MaterialIcons } from "@expo/vector-icons";
 import { User } from "@supabase/supabase-js";
 import React, { useEffect, useState } from "react";
 import {
@@ -34,7 +35,7 @@ export default function ProfileScreen() {
     (async () => {
       await getUtente(setUser);
     })();
-  },[]);
+  }, []);
   const addPlate = () => {
     if (newPlate.trim()) {
       setPlates([
@@ -61,21 +62,21 @@ export default function ProfileScreen() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.name}>Utente</Text>
-      <View style={styles.profileIcon}>
-        {/* Add profile icon here if you have one */}
+      <View style={{flex:1,flexDirection:"row",alignItems:"center",justifyContent:"space-evenly"}}>
+        <Text style={styles.name}>
+          {userData?.nome} {userData?.cognome}
+        </Text>
+        <View style={styles.profileIcon}>
+          <MaterialIcons name="person-outline" size={48} />
+        </View>
       </View>
       <View style={styles.infoContainer}>
-        <Text style={styles.label}>Nome</Text>
-        <Text style={styles.text}>{userData?.nome}</Text>
-
-        <Text style={styles.label}>Cognome</Text>
-        <Text style={styles.text}>{userData?.cognome}</Text>
-
         <Text style={styles.label}>Email</Text>
         <Text style={styles.text}>{userData?.email}</Text>
         <Text style={styles.label}>Password</Text>
         <Text style={styles.text}>*********</Text>
+        <Text style={styles.label}>Città</Text>
+        <Text style={styles.text}>{userData?.localita}</Text>
       </View>
       <Text style={styles.sectionTitle}>Elenco targhe registrate</Text>
       <FlatList
