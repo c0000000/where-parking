@@ -30,7 +30,7 @@ const MappaScreen = () => {
     //console.log({ markerCar });
     if (markerCar) {
       if (gpsActivated) {
-        alert(!onPercorso?"Ricerca percorso migliore":"Percorso rimosso");
+        alert(!onPercorso ? "Ricerca percorso migliore" : "Percorso rimosso");
         const { coordinate } = markerCar;
         changeRegion(coordinate.latitude, coordinate.longitude);
       } else {
@@ -73,8 +73,9 @@ const MappaScreen = () => {
   };
   const handleActivateGPS = () => {
     if (errorMsg !== null) {
-      alert("Errore nel GPS, riprova");
-      console.error(errorMsg);
+      //alert("Errore nel GPS, riprova");
+      alert(errorMsg);
+      console.log(errorMsg);
       setGpsActivated(false);
       return;
     }
@@ -93,12 +94,12 @@ const MappaScreen = () => {
       setGpsActivated(true);
       setUserMarker(newUserMarker);
       setMarkers((prevMarkers) => [newUserMarker, ...prevMarkers]);
-     // console.log("GPS Markers --", markers);
+      // console.log("GPS Markers --", markers);
       setGpsActivated(true);
       const { coordinate } = newUserMarker;
       changeRegion(coordinate.latitude, coordinate.longitude);
     } else {
-      alert("Errore nella posizione: Riprova ad attivare GPS\n" + locationData);
+      //alert("Errore nella posizione: Riprova ad attivare GPS\n" + locationData);
       setGpsActivated(false);
     }
   };
