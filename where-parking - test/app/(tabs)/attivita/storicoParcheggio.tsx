@@ -1,245 +1,155 @@
-import React, { useState, useEffect, Children } from "react";
-import {
-  View,
-  Text,
-  TextInput,
-  FlatList,
-  StyleSheet,
-  TouchableOpacity,
-} from "react-native";
-import Icon from "react-native-vector-icons/FontAwesome";
-const parkingData = [
-  {
-    id: "1",
-    address: "Via Benigno Crespi, 30, 20159 Milan",
-    date: "5/30/2024",
-    time: "13:20 - 15:33",
-    plate: "ES233FK",
-    price: "€ 6",
-    favorite: false,
-  },
-  {
-    id: "2",
-    address: "Corso Buenos Aires, 33, 20124 Milan",
-    date: "5/30/2024",
-    time: "11:30 - 13:00",
-    plate: "XY987ZT",
-    price: "€ 7",
-    favorite: true,
-  },
-  {
-    id: "3",
-    address: "Piazza del Duomo, 12, 20122 Milan",
-    date: "5/29/2024",
-    time: "14:00 - 15:30",
-    plate: "LM456OP",
-    price: "€ 8",
-    favorite: false,
-  },
-  {
-    id: "4",
-    address: "Via Dante, 7, 20121 Milan",
-    date: "5/28/2024",
-    time: "09:00 - 11:00",
-    plate: "JK321GH",
-    price: "€ 6",
-    favorite: true,
-  },
-  {
-    id: "5",
-    address: "Viale Abruzzi, 99, 20131 Milan",
-    date: "5/27/2024",
-    time: "17:00 - 18:30",
-    plate: "UV654WX",
-    price: "€ 4",
-    favorite: false,
-  },
-];
+import React from 'react';
+import { View, Text, ScrollView, StyleSheet, TextInput, Image, TouchableOpacity } from 'react-native';
+import { FontAwesome5 } from '@expo/vector-icons';
 
-const ParkingCard = ({ data, toggleFavorite }) => (
-  <View style={styles.card}>
-    <Icon name="car" size={40} color="#000" />
-    <View style={styles.cardContent}>
-      <Text>{data.address}</Text>
-      <Text>Payed {data.price}</Text>
-      <Text>Plate: {data.plate}</Text>
-      <Text>{data.date}</Text>
-      <Text>{data.time}</Text>
-    </View>
-    <TouchableOpacity onPress={() => toggleFavorite(data.id)}>
-      {/* <Icon name="bookmark" size={24} color={data.favorite ? "#FFD700" : "#000"} /> */}
-    </TouchableOpacity>
-  </View>
-);
-
-const StoricoParcheggio = () => {
-  const [sortType, setSortType] = useState("none"); // State to manage sort type
-  const [totalExpenses, setTotalExpenses] = useState(0); // State to manage total expenses
-  const [data, setData] = useState(parkingData); // State to manage parking data
-
-  useEffect(() => {
-    calculateTotalExpenses();
-  }, [data]);
-
-  const calculateTotalExpenses = () => {
-    const total = data.reduce(
-      (acc, item) => acc + parseFloat(item.price.slice(1)),
-      0
-    );
-    setTotalExpenses(total);
-  };
-
-  const sortData = (type) => {
-    let sortedData = [...data];
-    if (type === "highest") {
-      sortedData.sort(
-        (a, b) => parseFloat(b.price.slice(1)) - parseFloat(a.price.slice(1))
-      );
-    } else if (type === "invert") {
-      sortedData.reverse();
-    }
-    return sortedData;
-  };
-
-  const toggleFavorite = (id) => {
-    const updatedData = data.map((item) => {
-      if (item.id === id) {
-        return { ...item, favorite: !item.favorite };
-      }
-      return item;
-    });
-    setData(updatedData);
-  };
+const ParkingHistoryScreen = () => {
+  const parkingData = [
+    { id: 1, address: 'Via Benigno Crespi, 30, 20159 Milano', date: '5/30/2024', time: '13:20 - 15:33', cost: '€ 6', plate: 'ES233FK', paid: true },
+    { id: 2, address: 'Via Benigno Crespi, 30, 20159 Milano', date: '5/30/2024', time: '13:20 - 15:33', cost: '€ free', plate: 'ES233FK', paid: true },
+    { id: 3, address: 'Via Benigno Crespi, 30, 20159 Milano', date: '5/30/2024', time: '13:20 - 15:33', cost: '€ 10', plate: 'ES233FK', paid: true },
+    { id: 4, address: 'Via Benigno Crespi, 30, 20159 Milano', date: '5/30/2024', time: '13:20 - 15:33', cost: '€ 4', plate: 'ES233FK', paid: true },
+  ];
 
   return (
-    <>
-      <View style={styles.container}>
-        <Text style={styles.header}>Storico parcheggi</Text>
-        <View style={styles.searchContainer}>
-          <TextInput
-            placeholder="Inserisci la via del parcheggio..."
-            style={styles.searchInput}
-          />
-          <TouchableOpacity>
-            <Icon name="search" size={20} color="#000" />
-          </TouchableOpacity>
-        </View>
-        <View style={styles.filterContainer}>
-          <Text style={styles.subHeader}>Parcheggi recenti</Text>
-          <TouchableOpacity
-            onPress={() => setSortType("highest")}
-            style={styles.filterButton}
-          >
-            <Icon name="filter" size={20} color="#000" />
-            <Text>Highest Paid</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            onPress={() => setSortType("invert")}
-            style={styles.filterButton}
-          >
-            <Icon name="exchange" size={20} color="#000" />
-            <Text>Invert List</Text>
-          </TouchableOpacity>
-        </View>
-        <FlatList
-          data={sortData(sortType)}
-          keyExtractor={(item) => item.id}
-          renderItem={({ item }) => (
-            <ParkingCard data={item} toggleFavorite={toggleFavorite} />
-          )}
+    <View style={styles.container}>
+      <Text style={styles.header}>Storico parcheggi</Text>
+      <View style={styles.searchContainer}>
+        <TextInput
+          style={styles.searchBar}
+          placeholder="Inserisci la via del parcheggio..."
+          placeholderTextColor="#666"
         />
-        <View style={styles.footer}>
-          <View style={styles.totSpesa}>
-            <Text style={styles.t}>Totale Spese Parcheggi:</Text>
-            <Text style={styles.p}>€{totalExpenses.toFixed(2)}</Text>
-          </View>
-          <TouchableOpacity style={styles.button}>
-            <Text style={styles.buttonText}>STATISTICHE</Text>
-          </TouchableOpacity>
-        </View>
+        <TouchableOpacity style={styles.searchIcon}>
+          <FontAwesome5 name="search" size={20} color="black" />
+        </TouchableOpacity>
       </View>
-    </>
+      <View style={styles.recentHeader}>
+        <Text style={styles.recentText}>Parcheggi recenti</Text>
+        <TouchableOpacity>
+          <FontAwesome5 name="filter" size={24} color="black" />
+        </TouchableOpacity>
+      </View>
+      <ScrollView>
+        <View style={styles.recentParkingContainer}>
+          {parkingData.map(parking => (
+            <View key={parking.id} style={styles.parkingItem}>
+              <Image source={{ uri: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6d/Cusago-Stemma.svg/1597px-Cusago-Stemma.svg.png' }} style={styles.parkingImage} />
+              <View style={styles.parkingInfo}>
+                <Text style={styles.parkingAddress}>{parking.address}</Text>
+                <Text style={styles.parkingDetails}>Targa: {parking.plate}</Text>
+                <Text style={styles.parkingDetails}>{parking.date}</Text>
+                <Text style={styles.parkingDetails}>{parking.time}</Text>
+              </View>
+              <Text style={[styles.parkingCost, parking.cost === '€ free' ? styles.free : styles.paid]}>{parking.cost}</Text>
+            </View>
+          ))}
+        </View>
+      </ScrollView>
+      <View style={styles.totalContainer}>
+        <Text style={styles.totalText}>Totale Spese Parcheggi :</Text>
+        <Text style={styles.totalAmount}>20$</Text>
+      </View>
+      <View style={styles.footer}>
+      </View>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#0096FF",
-    padding: 16,
+    backgroundColor: '#F5F5F5',
+    paddingHorizontal: 20,
+    paddingTop: 40,
   },
   header: {
     fontSize: 24,
-    fontWeight: "bold",
-    color: "#FFBF00",
-    textAlign: "center",
+    fontWeight: 'bold',
+    marginBottom: 20,
+    textAlign: 'center',
   },
   searchContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "#fff",
-    borderRadius: 8,
-    padding: 8,
-    marginVertical: 16,
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 20,
   },
-  searchInput: {
+  searchBar: {
     flex: 1,
+    backgroundColor: '#FFF',
+    padding: 10,
+    borderRadius: 5,
+    marginRight: 10,
   },
-  subHeader: {
+  searchIcon: {
+    padding: 10,
+    backgroundColor: '#FFF',
+    borderRadius: 5,
+  },
+  recentHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  recentText: {
     fontSize: 18,
-    fontWeight: "bold",
-    color: "#fff",
+    fontWeight: 'bold',
   },
-  filterContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    marginVertical: 8,
+  recentParkingContainer: {
+    marginBottom: 20,
   },
-  filterButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "#fff",
-    borderRadius: 8,
-    padding: 8,
-    marginHorizontal: 4,
+  parkingItem: {
+    flexDirection: 'row',
+    backgroundColor: '#FFF',
+    padding: 10,
+    borderRadius: 5,
+    marginBottom: 10,
+    alignItems: 'center',
   },
-  card: {
-    backgroundColor: "#fff",
-    borderRadius: 8,
-    padding: 16,
-    flexDirection: "row",
-    alignItems: "center",
-    marginVertical: 8,
+  parkingImage: {
+    width: 50,
+    height: 50,
+    marginRight: 10,
   },
-  cardContent: {
+  parkingInfo: {
     flex: 1,
-    marginLeft: 16,
+  },
+  parkingAddress: {
+    fontWeight: 'bold',
+  },
+  parkingDetails: {
+    color: '#666',
+  },
+  parkingCost: {
+    fontWeight: 'bold',
+  },
+  paid: {
+    color: 'green',
+  },
+  free: {
+    color: 'blue',
+  },
+  totalContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    padding: 10,
+    backgroundColor: '#FFF',
+    borderRadius: 5,
+  },
+  totalText: {
+    fontWeight: 'bold',
+  },
+  totalAmount: {
+    fontWeight: 'bold',
   },
   footer: {
-    alignItems: "center",
-  },
-  button: {
-    backgroundColor: "#000",
-    borderRadius: 8,
-    padding: 10,
-    marginTop: 8,
-  },
-  buttonText: {
-    color: "#fff",
-  },
-  totSpesa: {
-    display: "flex",
-    flexDirection: "row",
-    justifyContent: "space-between",
-    width: "100%",
-  },
-  t: {
-    color: "white",
-  },
-  p: {
-    color: "white",
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    paddingVertical: 10,
+    borderTopWidth: 1,
+    borderTopColor: '#DDD',
+    marginTop: 10,
   },
 });
 
-export default StoricoParcheggio;
+export default ParkingHistoryScreen;
