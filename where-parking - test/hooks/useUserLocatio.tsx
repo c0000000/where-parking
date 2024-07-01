@@ -27,9 +27,9 @@ export const useLocatioUser = () => {
     }
   };
 
-  useEffect(() => {
-    requestLocation();
-  }, []); 
+  // useEffect(() => {
+  //   requestLocation();
+  // }, []); 
 
   let text = "Waiting..";
   if (errorMsg) {

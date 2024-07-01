@@ -4,32 +4,50 @@ import MappaPark, { MarkerData } from "./MappaPark";
 import SearchComponent from "../searchBar";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useLocatioUser } from "@/hooks/useUserLocatio";
+const carMarker: MarkerData = {
+  id: "car",
+  coordinate: {
+    latitude: 45.50021260848525,
+    longitude: 9.178587101036626,
+  },
+  title: "Car Location",
+  color: "red",
+};
 
 const MappaScreen = () => {
-
   const [locationData, errorMsg, requestLocation] = useLocatioUser();
   const [gpsActivated, setGpsActivated] = useState(false);
-  const [markers, setMarkers] = useState<MarkerData[]>([]);
+  const [markers, setMarkers] = useState<MarkerData[]>([carMarker]);
   const [userMarker, setUserMarker] = useState<MarkerData | null>(null);
 
   const handleActivateGPS = async () => {
+    console.info("GPS STATE", gpsActivated);
+    if (gpsActivated) {
+      setMarkers((prevMarkers: MarkerData[]) => {
+        const newMarkers = prevMarkers.filter((marker) => marker.id !== "user");
+        console.log("prevMarkers", newMarkers);
+        return newMarkers;
+      });
+      setGpsActivated(false);
+      setUserMarker(null);
+
+      alert("GPS disattivato");
+      return;
+    }
     await requestLocation();
 
     if (errorMsg) {
-      alert(
-        "Accesso alla posizione negato. Abilita il permesso di accesso alla posizione nelle impostazioni del dispositivo."
-      );
+      alert(errorMsg);
+      setGpsActivated(false);
       return;
     }
+    setGpsActivated(true);
 
-    setGpsActivated((prevActivated) => !prevActivated);
+    console.log("errorMsg", errorMsg);
+    console.log("userMakrer", locationData);
+    console.info("GPS STATE", gpsActivated);
 
-    if (!gpsActivated && userMarker) {
-      setMarkers((prevMarkers) =>
-        prevMarkers.filter((marker) => marker.id !== "user")
-      );
-      setUserMarker(null);
-    } else if (gpsActivated && locationData) {
+    if (locationData) {
       const newUserMarker: MarkerData = {
         id: "user",
         coordinate: {
@@ -38,9 +56,14 @@ const MappaScreen = () => {
         },
         title: "User Location",
         description: `Accuracy: ${locationData.coords.accuracy}`,
+        color: "blue",
       };
+      setGpsActivated(true);
       setUserMarker(newUserMarker);
       setMarkers((prevMarkers) => [newUserMarker, ...prevMarkers]);
+      console.log("GPS Markers", markers);
+    }else{
+      alert("Disattiva e  Attiva il GPS")
     }
   };
 
@@ -56,7 +79,7 @@ const MappaScreen = () => {
         <MaterialIcons
           name="gps-fixed"
           size={24}
-          color={!gpsActivated ? "blue" : "black"}
+          color={gpsActivated ? "blue" : "black"}
         />
       </TouchableOpacity>
     </View>

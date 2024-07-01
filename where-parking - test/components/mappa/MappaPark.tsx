@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { StyleSheet } from "react-native";
 import MapView, { Marker } from "react-native-maps";
+import MapViewDirections from "react-native-maps-directions";
 
 export type Coordinate = {
   latitude: number;
@@ -12,6 +13,7 @@ export type Coordinate = {
 export type MarkerData = {
   id: string;
   coordinate: Coordinate;
+  color?: string;
   title?: string;
   description?: string;
 };
@@ -31,17 +33,38 @@ const MappaPark = ({ coordinate: initCoordinate, markers }: MappaParkProps) => {
     }
   );
 
+  const userLocation = markers.filter((m) => m.id == "user")[0];
+  const carLocation = markers.filter((m) => m.id == "car")[0];
+
+  const origin = userLocation?.coordinate ?? {
+    latitude: 37.771707,
+    longitude: -122.4053769,
+  };
+  const destination = carLocation?.coordinate ?? {
+    latitude: 37.771707,
+    longitude: -122.4053769,
+  };
+  const GOOGLE_MAPS_APIKEY = "AIzaSyC0FC6-sXJ7ApEO_si6bg3c7DN5dyAFzBo";
+
   return (
     <MapView style={styles.map} region={coordinate}>
-      {markers && 
+      {markers &&
         markers.map((marker) => (
           <Marker
             key={marker.id}
             coordinate={marker.coordinate}
             title={marker.title || ""}
             description={marker.description || ""}
+            pinColor={marker.color || ""}
           />
         ))}
+      {origin && destination && (
+        <MapViewDirections
+          origin={origin}
+          destination={destination}
+          apikey={GOOGLE_MAPS_APIKEY}
+        />
+      )}
     </MapView>
   );
 };
