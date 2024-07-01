@@ -1,110 +1,112 @@
-import React, { useState, useEffect, Children } from 'react';
-import { View, Text, TextInput, FlatList, StyleSheet, TouchableOpacity } from 'react-native';
-import Icon from 'react-native-vector-icons/FontAwesome';
 
-const BottomNavigation = () => (
-    <View style={styles.bottomNavigation}>
-      <Icon name="user" size={24} color="#000" />
-      <Icon name="car" size={24} color="#000" />
-      <Icon name="bars" size={24} color="#000" />
-    </View>
-  );
+import React from 'react';
+import { View, Text, TextInput, Dimensions, StyleSheet, ScrollView } from 'react-native';
+import { BarChart } from 'react-native-chart-kit';
 
-const statisticaParcheggio = () => {
 
+const data = {
+  labels: ["20", "21", "22", "23", "24"],
+  datasets: [
+    {
+      data: [6, 0, 10, 4, 8],
+      color: () => `#7b00ff`, 
+    },
+  ],
+};
+
+const chartConfig = {
+  backgroundGradientFrom: "#ffffff",
+  backgroundGradientTo: "#ffffff",
+  decimalPlaces: 0,
+  color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+  labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+  style: {
+    borderRadius: 16
+  },
+  propsForLabels: {
+    fontSize: 10
+  },
+  propsForVerticalLabels: {
+    fontSize: 10
+  },
+  propsForBackgroundLines: {
+    stroke: "#e3e3e3"
+  }
+};
+
+const StatisticsScreen = () => {
   return (
-    <>
-    <View style={styles.container}>
-      <Text style={styles.header}>La tua statica della città</Text>
+    <ScrollView style={styles.container}>
+    <View style={styles.titolo}>
+      <Text style={styles.title}>Le tue statistiche della città x</Text>
+      </View>
       <View style={styles.searchContainer}>
-        <TextInput placeholder="Inserisci la città..." style={styles.searchInput} />
-        <TouchableOpacity>
-          <Icon name="search" size={20} color="#000" />
-        </TouchableOpacity>
+        <TextInput style={styles.input} placeholder="Inserisci la città..." />
+        <Text style={styles.searchIcon}>🔍</Text>
       </View>
-      <Text style={styles.subHeader}>Grafica</Text>
-      <View style={styles.filterContainer}>
-       <Text style={styles.context}>Tempo totale: </Text>
-      <Text style={styles.context}>Costo totale parcheggi: </Text>
+      <Text>Tempo totale: 15h</Text>
+      <Text>Costo totale parcheggi: 20€ </Text>
+      <View>
+      <Text style={styles.col}>2024 Gennaio</Text>
       </View>
-      <View style={styles.footer}>
-        <TouchableOpacity style={styles.button}>
-          <Text style={styles.buttonText}>STATISTICHE GENERALI</Text>
-        </TouchableOpacity>
-      </View>
-    </View>
-    </>
+      <BarChart
+        data={data}
+        width={355}
+        height={400}
+        chartConfig={chartConfig}
+        style={styles.chart}
+        fromZero={true}
+        showValuesOnTopOfBars={true}
+      />
+    </ScrollView>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0096FF',
-    padding: 16,
+    backgroundColor: '#e0e0e0',
+    padding: 10,
   },
-  header: {
+  title: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#FFBF00',
     textAlign: 'center',
-    padding:15,
-
+    marginVertical: 20
+  },
+  titolo: {
+    padding: 15,
+    paddingBottom: -5,
   },
   searchContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: '#fff',
-    borderRadius: 8,
-    padding: 8,
-    marginVertical: 16,
+    borderRadius: 10,
+    marginVertical: 10,
+    paddingHorizontal: 10,
+    height: 40
   },
-  searchInput: {
+  input: {
     flex: 1,
+    fontSize: 16
   },
-  subHeader: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#fff',
+  searchIcon: {
+    fontSize: 20
   },
-  filterContainer: {
+  chart: {
+    marginVertical: 15,
+    borderRadius: 10,
     padding: 10,
-    backgroundColor: '#87CEFA',
-    borderRadius: 8,
-    flex: 1,
-    justifyContent: 'flex-start',
-    alignItems: 'flex-start',
-    shadowColor: 'black',
-    shadowRadius: 10,
-    shadowOpacity: 0.5,
-    shadowOffset: { width: 50, height: 2},
+    backgroundColor: '#0f4c81',
   },
-  footer: {
-    alignItems: 'center',
-  },
-  button: {
-    backgroundColor: '#000',
-    borderRadius: 8,
-    padding: 10,
-    marginTop: 8,
-    
-  },
-  buttonText: {
-    color: '#fff',
-  },
-  bottomNavigation: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    padding: 16,
-    backgroundColor: '#fff',
-    borderRadius: 8,
-    marginTop: 8,
-  },
-  context: {
-      fontSize: 16,
+  col: {
+    textAlign: "center",
+    padding: 15,
+    backgroundColor: "#0080ff",
+    borderRadius: 10,
+    width: 90
   }
-
-
 });
 
-export default statisticaParcheggio;
+export default StatisticsScreen;
