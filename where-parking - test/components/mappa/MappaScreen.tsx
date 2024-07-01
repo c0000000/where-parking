@@ -27,7 +27,7 @@ const MappaScreen = () => {
       }
     }
     const markerCar = markers.find((m) => m.id === "car");
-    console.log({ markerCar });
+    //console.log({ markerCar });
     if (markerCar) {
       if (gpsActivated) {
         alert(!onPercorso?"Ricerca percorso migliore":"Percorso rimosso");
@@ -93,7 +93,7 @@ const MappaScreen = () => {
       setGpsActivated(true);
       setUserMarker(newUserMarker);
       setMarkers((prevMarkers) => [newUserMarker, ...prevMarkers]);
-      console.log("GPS Markers --", markers);
+     // console.log("GPS Markers --", markers);
       setGpsActivated(true);
       const { coordinate } = newUserMarker;
       changeRegion(coordinate.latitude, coordinate.longitude);
@@ -121,7 +121,6 @@ const MappaScreen = () => {
           if (gpsActivated) {
             const { coordinate } = markers.find((m) => m.id === "user");
             changeRegion(coordinate.latitude, coordinate.longitude);
-            console.log("click GPS", coordinate);
           }
           requestLocation(handleActivateGPS, {
             gpsActivated,
