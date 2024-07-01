@@ -36,7 +36,7 @@ export const useLocatioUser = () => {
       let { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== "granted") {
         throw new Error(
-          "Permessi GPS sono stati negati,\n Attivarli dalle impostazioni"
+          "Permessi GPS sono stati negati,\n- Attivarli dalle impostazioni"
         );
       }
 
