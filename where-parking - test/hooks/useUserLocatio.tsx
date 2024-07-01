@@ -2,13 +2,29 @@ import React, { useState, useEffect } from "react";
 import { Platform } from "react-native";
 import * as Device from "expo-device";
 import * as Location from "expo-location";
+import { MarkerData } from "@/components/mappa/MappaPark";
 
 export const useLocatioUser = () => {
   const [location, setLocation] = useState(null);
   const [errorMsg, setErrorMsg] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  const requestLocation = async (callback) => {
+  const requestLocation = async (
+    callback,
+    { gpsActivated, setMarkers, setGpsActivated, setUserMarker }
+  ) => {
+    if (gpsActivated) {
+      // setMarkers((prevMarkers: MarkerData[]) => {
+      //   const newMarkers = prevMarkers.filter((marker) => marker.id !== "user");
+      //   console.log("prevMarkers", newMarkers);
+      //   return newMarkers;
+      // });
+      // setGpsActivated(false);
+      // setUserMarker(null);
+      // alert("GPS disattivato");
+      // return;
+      return;
+    }
     setLoading(true);
     try {
       if (Platform.OS === "android" && !Device.isDevice) {
@@ -34,8 +50,6 @@ export const useLocatioUser = () => {
     callback();
 
     // console.info("fine useUserLocation\n");
-    // console.log("TCL: requestLocation -> location", location);
-    // console.log("TCL: requestLocation -> error", errorMsg);
   };
 
   // useEffect(() => {

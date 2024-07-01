@@ -1,17 +1,18 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { View, StyleSheet, TouchableOpacity, Text } from "react-native";
-import MappaPark, { MarkerData } from "./MappaPark";
+import MappaPark, { MarkerData, Coordinate } from "./MappaPark";
 import SearchComponent from "../searchBar";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useLocatioUser } from "@/hooks/useUserLocatio";
 import { getComuni } from "../useBase";
+import { Region } from "react-native-maps";
 
 const MappaScreen = () => {
   const [locationData, errorMsg, loading, requestLocation] = useLocatioUser();
   const [gpsActivated, setGpsActivated] = useState(false);
   const [markers, setMarkers] = useState<MarkerData[]>([]);
   const [userMarker, setUserMarker] = useState<MarkerData | null>(null);
-
+  const [focusCoordinate, setCoordinate] = useState<Coordinate>(null);
   const trovaAuto = async () => {
     if (!gpsActivated) {
       if (errorMsg) {
@@ -22,9 +23,13 @@ const MappaScreen = () => {
         return;
       }
     }
-    if (markers.find((m) => m.id === "car")) {
+    const markerCar = markers.find((m) => m.id === "car");
+    console.log({ markerCar });
+    if (markerCar) {
       if (gpsActivated) {
         alert("Ricerca percorso migliore");
+        const { coordinate } = markerCar;
+        changeRegion(coordinate.latitude, coordinate.longitude);
       } else {
         alert("Attiva il GPS");
       }
@@ -32,8 +37,22 @@ const MappaScreen = () => {
       alert("Non hai ancora salvato un parcheggio");
     }
   };
+
+  const changeRegion = (newLatitude, newLongitude) => {
+    const newRegion = {
+      latitude: newLatitude,
+      longitude: newLongitude,
+      latitudeDelta: 0.1,
+      longitudeDelta: 0.1,
+    };
+    setCoordinate(newRegion);
+  };
+
   const createMarkerCar = async () => {
-    await getComuni();
+    // await getComuni();
+    if (markers.find((m) => m.id === "car")) {
+      alert("Hai gia parcheggiato");
+    }
     const carMarker: MarkerData = {
       id: "car",
       coordinate: {
@@ -52,35 +71,12 @@ const MappaScreen = () => {
     });
   };
   const handleActivateGPS = () => {
-    console.log("callback start");
-    // if (gpsActivated) {
-    //   setMarkers((prevMarkers: MarkerData[]) => {
-    //     const newMarkers = prevMarkers.filter((marker) => marker.id !== "user");
-    //     console.log("prevMarkers", newMarkers);
-    //     return newMarkers;
-    //   });
-    //   setGpsActivated(false);
-    //   setUserMarker(null);
-
-    //   alert("GPS disattivato");
-    //   return;
-    // }
-    console.info("STEP requestLocation");
-
-    console.log("errorMsg", errorMsg);
-    console.log("locationData", locationData);
-    console.info("GPS STATE", gpsActivated);
-
     if (errorMsg !== null) {
       alert("Errore nel GPS, riprova");
       console.error(errorMsg);
       setGpsActivated(false);
       return;
     }
-
-    console.log("errorMsg", errorMsg);
-    console.log("locationData", locationData);
-    console.info("GPS STATE", gpsActivated);
 
     if (locationData !== null) {
       const newUserMarker: MarkerData = {
@@ -98,6 +94,8 @@ const MappaScreen = () => {
       setMarkers((prevMarkers) => [newUserMarker, ...prevMarkers]);
       console.log("GPS Markers", markers);
       setGpsActivated(true);
+      const { coordinate } = newUserMarker;
+      changeRegion(coordinate.latitude, coordinate.longitude);
     } else {
       alert("Errore nella poszione: Riprova ad attivare GPS\n" + locationData);
       setGpsActivated(false);
@@ -105,16 +103,28 @@ const MappaScreen = () => {
   };
 
   return (
-    <View>
+    <View style={{ width: "100%", height: "100%" }}>
       <View style={styles.mapContainer}>
-        <MappaPark markers={markers} />
+        <MappaPark coordinate={focusCoordinate} markers={markers} />
         <View style={styles.search}>
           <SearchComponent />
         </View>
       </View>
       <TouchableOpacity
         style={styles.button}
-        onPress={() => requestLocation(handleActivateGPS)}
+        onPress={() => {
+          if (gpsActivated) {
+            const { coordinate } = markers.find((m) => m.id === "user");
+            changeRegion(coordinate.latitude, coordinate.longitude);
+            console.log("click GPS", coordinate);
+          }
+          requestLocation(handleActivateGPS, {
+            gpsActivated,
+            setMarkers,
+            setGpsActivated,
+            setUserMarker,
+          });
+        }}
       >
         <MaterialIcons
           name={!loading ? "gps-fixed" : "sync"}
@@ -143,7 +153,7 @@ const MappaScreen = () => {
 const styles = StyleSheet.create({
   mapContainer: {
     position: "relative",
-    height: "100%",
+    height: "90%",
   },
 
   search: {
@@ -158,12 +168,12 @@ const styles = StyleSheet.create({
     width: 48,
     height: 48,
     position: "absolute",
-    bottom: 80,
-    right: 10,
+    bottom: 180,
+    right: 7,
     backgroundColor: "white",
     paddingVertical: 10,
     alignItems: "center",
-    borderRadius: 5,
+    borderRadius: 100,
   },
   buttonText: {
     color: "white",
@@ -173,10 +183,11 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    position: "absolute",
     bottom: 0,
     width: "100%",
     backgroundColor: "white",
+    borderColor: "black",
+    borderTopWidth: 1,
   },
   buttonContainer: {
     flexDirection: "row",

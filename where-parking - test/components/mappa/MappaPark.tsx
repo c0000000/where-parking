@@ -23,16 +23,7 @@ export type MappaParkProps = {
   markers?: MarkerData[];
 };
 
-const MappaPark = ({ coordinate: initCoordinate, markers }: MappaParkProps) => {
-  const [coordinate, setCoordinate] = useState<Coordinate>(
-    initCoordinate || {
-      latitude: 45.4642,
-      longitude: 9.19,
-      latitudeDelta: 0.0922,
-      longitudeDelta: 0.0421,
-    }
-  );
-
+const MappaPark = ({ coordinate, markers }: MappaParkProps) => {
   const userLocation = markers.filter((m) => m.id == "user")[0];
   const carLocation = markers.filter((m) => m.id == "car")[0];
 
@@ -42,7 +33,17 @@ const MappaPark = ({ coordinate: initCoordinate, markers }: MappaParkProps) => {
   const GOOGLE_MAPS_APIKEY = "AIzaSyC0FC6-sXJ7ApEO_si6bg3c7DN5dyAFzBo";
 
   return (
-    <MapView style={styles.map} region={coordinate}>
+    <MapView
+      style={styles.map}
+      initialRegion={{
+        latitude: 45.4642,
+        longitude: 9.19,
+        latitudeDelta: 0.0922,
+        longitudeDelta: 0.0421,
+      }}
+      zoomControlEnabled={false}
+      region={coordinate}
+    >
       {markers &&
         markers.map((marker) => (
           <Marker
