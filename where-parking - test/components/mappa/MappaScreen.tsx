@@ -98,7 +98,7 @@ const MappaScreen = () => {
       const { coordinate } = newUserMarker;
       changeRegion(coordinate.latitude, coordinate.longitude);
     } else {
-      alert("Errore nella poszione: Riprova ad attivare GPS\n" + locationData);
+      alert("Errore nella posizione: Riprova ad attivare GPS\n" + locationData);
       setGpsActivated(false);
     }
   };
@@ -155,8 +155,8 @@ const styles = StyleSheet.create({
   search: {
     position: "absolute",
     top: 20,
-    left: 30,
-    right: 20,
+    left: 35,
+    right: 35,
     zIndex: 1,
   },
   button: {
