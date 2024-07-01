@@ -16,7 +16,7 @@ export const getUtente = async (setUser) => {
     .select("*")
     .limit(1);
   if (utente) {
-    console.log(utente[0]);
+    //console.log(utente[0]);
     setUser((u) => utente[0]);
   }
 };
